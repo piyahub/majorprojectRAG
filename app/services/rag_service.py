@@ -22,7 +22,7 @@ def ingest_documents_to_chroma():
 
     if texts:
         vectorstore.add_texts(texts=texts, metadatas=metadatas)
-        vectorstore.persist()
+        # vectorstore.persist()
 
 
 def rag_chat(query: str) -> str:
