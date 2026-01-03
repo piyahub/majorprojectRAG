@@ -8,12 +8,14 @@ load_dotenv()
 
 app = FastAPI(title=settings.PROJECT_NAME)
 
-@app.on_event("startup")
-def startup_event():
-    ingest_documents_to_chroma()
+# @app.on_event("startup")
+# def startup_event():
+#     ingest_documents_to_chroma()
 
 app.include_router(chat_router)
 
 @app.get("/")
 def root():
     return {"message": "Vector RAG Chatbot Running"}
+
+
