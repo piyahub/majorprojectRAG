@@ -39,17 +39,17 @@ def rag_chat(query: str) -> str:
     context = "\n\n".join([doc.page_content for doc in docs])
 
     prompt = f"""
-You are a helpful college assistant.
-Answer ONLY using the context below.
-If the answer is not found, say "Information not available in the documents."
+        You are a helpful college assistant.
+        Answer ONLY using the context below.
+        If the answer is not found, say "Information not available in the documents."
 
-Context:
-{context}
+        Context:
+        {context}
 
-Question:
-{query}
+        Question:
+        {query}
 
-Answer:
-"""
+        Answer:
+        """
 
     return generate_answer(prompt)

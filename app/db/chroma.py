@@ -1,10 +1,9 @@
 from langchain_community.vectorstores import Chroma
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
 from app.core.config import settings
 
-embedding_function = GoogleGenerativeAIEmbeddings(
-    google_api_key=settings.GEMINI_API_KEY,
-    model="models/embedding-001"
+embedding_function = HuggingFaceEmbeddings(
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
 
 vectorstore = Chroma(
