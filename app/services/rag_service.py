@@ -1,55 +1,49 @@
-from app.db.mongodb import documents_collection
+
 from app.db.chroma import vectorstore
-from app.services.llm_service import generate_answer
+from langchain_google_genai import ChatGoogleGenerativeAI
+from app.core.config import settings
 
 
-def ingest_documents_to_chroma():
-    """
-    Load documents from MongoDB into ChromaDB (run once).
-    """
-    docs = documents_collection.find()
-
-    texts = []
-    metadatas = []
-
-    for doc in docs:
-        texts.append(doc.get("text", ""))
-        metadatas.append({
-            "category": doc.get("category"),
-            "source": doc.get("source"),
-            "department": doc.get("department")
-        })
-
-    if texts:
-        vectorstore.add_texts(texts=texts, metadatas=metadatas)
-        # vectorstore.persist()
+# 🔹 Gemini LLM (moved here from llm_service.py)
+llm = ChatGoogleGenerativeAI(
+    model="gemini-2.5-flash",
+    google_api_key=settings.GEMINI_API_KEY,
+    temperature=0.3,
+    max_tokens=None,
+    timeout=None,
+    max_retries=2,
+)
 
 
 def rag_chat(query: str) -> str:
     """
-    Vector-based RAG using ChromaDB
+    Perform Retrieval-Augmented Generation (RAG)
+    using ChromaDB + Gemini
     """
-    # 1. Retrieve top 3 relevant documents
+
+    # 1️⃣ Retrieve relevant documents
     docs = vectorstore.similarity_search(query, k=3)
 
     if not docs:
         return "Information not available in the documents."
 
-    # 2. Build context from retrieved docs
-    context = "\n\n".join([doc.page_content for doc in docs])
+    # 2️⃣ Build context
+    context = "\n\n".join(doc.page_content for doc in docs)
 
     prompt = f"""
-        You are a helpful college assistant.
-        Answer ONLY using the context below.
-        If the answer is not found, say "Information not available in the documents."
+You are a helpful college assistant.
+Answer ONLY using the context below.
+If the answer is not found, say "Information not available in the documents."
 
-        Context:
-        {context}
+Context:
+{context}
 
-        Question:
-        {query}
+Question:
+{query}
 
-        Answer:
-        """
+Answer:
+"""
 
-    return generate_answer(prompt)
+    # 3️⃣ Gemini call
+    response = llm.invoke(prompt)
+    return response.content
