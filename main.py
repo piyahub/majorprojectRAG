@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.api.v1.routes.chat import router as chat_router
-from app.services.rag_service import ingest_documents_to_chroma
+from app.services.chroma_service import ingest_documents_to_chroma
 from app.core.config import settings
 from dotenv import load_dotenv
 
