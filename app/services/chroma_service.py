@@ -57,4 +57,4 @@ def add_documents_to_chroma(texts: list[str], metadata: dict):
             metadatas=batch_metadata
         )
 
-    vectorstore.persist()
+    # vectorstore.persist()
