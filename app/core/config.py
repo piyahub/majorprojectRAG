@@ -7,5 +7,6 @@ class Settings:
     PROJECT_NAME = "RAG Chatbot"
     MONGO_URI = os.getenv("MONGO_URI")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+    MONGO_DB_NAME = os.getenv("MONGO_DB_NAME") 
 
 settings = Settings()
