@@ -1,4 +1,3 @@
-
 from app.db.mongodb import db
 from app.services.chroma_service import add_documents_to_chroma
 
@@ -132,25 +131,64 @@ COLLECTION_FORMATTERS = {
 #             )
 
 
+# def ingest_selected_collections():
+#     for collection_name, formatter in COLLECTION_FORMATTERS.items():
+#         collection = db[collection_name]
+
+#         texts = []
+
+#         # FIX-2 + FIX-3 applied here
+#         cursor = collection.find(
+#             {},
+#             {"_id": 0}
+#         ).batch_size(200)
+
+#         for doc in cursor:
+#             text = formatter(doc)
+#             if text.strip():
+#                 texts.append(text)
+
+#         if texts:
+#             add_documents_to_chroma(
+#                 texts=texts,
+#                 metadata={"collection": collection_name}
+#             )
+
 def ingest_selected_collections():
+    BATCH_SIZE = 50   # 🔥 critical
+
     for collection_name, formatter in COLLECTION_FORMATTERS.items():
+        print(f"[INGEST] Processing collection: {collection_name}")
+
         collection = db[collection_name]
+        texts_batch = []
+        total_docs = 0
 
-        texts = []
-
-        # FIX-2 + FIX-3 applied here
-        cursor = collection.find(
-            {},
-            {"_id": 0}
-        ).batch_size(200)
+        cursor = collection.find({}, {"_id": 0}).batch_size(200)
 
         for doc in cursor:
             text = formatter(doc)
             if text.strip():
-                texts.append(text)
+                texts_batch.append(text)
 
-        if texts:
+            if len(texts_batch) >= BATCH_SIZE:
+                add_documents_to_chroma(
+                    texts=texts_batch,
+                    metadata={"collection": collection_name}
+                )
+                total_docs += len(texts_batch)
+                print(f"[INGEST] {collection_name}: {total_docs} added")
+
+                texts_batch.clear()  # 🔥 free memory
+
+        # Insert remaining docs
+        if texts_batch:
             add_documents_to_chroma(
-                texts=texts,
+                texts=texts_batch,
                 metadata={"collection": collection_name}
             )
+            total_docs += len(texts_batch)
+
+        print(f"[INGEST] {collection_name}: DONE ({total_docs} docs)")
+
+
