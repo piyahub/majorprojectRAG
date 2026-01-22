@@ -8,5 +8,6 @@ class Settings:
     MONGO_URI = os.getenv("MONGO_URI")
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
     MONGO_DB_NAME = os.getenv("MONGO_DB_NAME") 
+    ADMIN_API_KEY = os.getenv("ADMIN_API_KEY")
 
 settings = Settings()
