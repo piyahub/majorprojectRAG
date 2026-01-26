@@ -7,3 +7,7 @@ langchain-google-genai
 google-generativeai
 chromadb
 python-dotenv
+pydantic
+pydantic-settings
+langchain-chroma
+
