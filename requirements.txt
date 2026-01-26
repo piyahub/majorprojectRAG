@@ -10,4 +10,8 @@ python-dotenv
 pydantic
 pydantic-settings
 langchain-chroma
+langchain-huggingface
+sentence-transformers
+
+
 
